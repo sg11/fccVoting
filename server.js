@@ -1,7 +1,10 @@
 'use strict';
 
 var express = require('express');
+require('./app/models/polls.js');
+require('./app/models/responses.js');
 var routes = require('./app/routes/index.js');
+var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
@@ -9,6 +12,8 @@ var session = require('express-session');
 var app = express();
 require('dotenv').load();
 require('./app/config/passport')(passport);
+
+
 
 mongoose.connect(process.env.MONGO_URI);
 mongoose.Promise = global.Promise;
@@ -23,6 +28,8 @@ app.use(session({
 	saveUninitialized: true
 }));
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
