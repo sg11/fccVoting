@@ -97,10 +97,17 @@ app.factory('polls',['$http', function($http){
     return o;
 }]);
 
-app.controller('PollsCtrl',['$scope','polls','poll',function($scope, polls, poll){
+app.controller('PollsCtrl',['$scope','polls','poll','$window',function($scope, polls, poll,$window){
     $scope.poll = poll;
     
     $scope.data = [];
+    
+    $scope.tweetPoll = function(){
+        var url = $window.location.href;
+        var twt = 'Vote in my poll!\n' + url;
+        var twtLink = 'http://twitter.com/home?status=' +encodeURIComponent(twt);
+        $window.open(twtLink,'_blank');
+    }
     
     $scope.updateData = function() {
         for (var i = 0; i < poll.choices.length; i++) {
@@ -161,6 +168,9 @@ app.controller('NavCtrl',['$scope', '$q','auth',function($scope, $q, auth){
     auth.varPromise.then(function(data){
         $scope.isLoggedIn = data;
     });
+    
+    var greetings = ["Hello","Hey there","Oh hey","Good day","Howdy","Hi"];
+    $scope.greeting = greetings[Math.floor(Math.random()*6)];
 }]);
 
 app.controller('ProfileCtrl', ['$scope', 'user',function($scope,user){
@@ -173,12 +183,13 @@ app.controller('ProfileCtrl', ['$scope', 'user',function($scope,user){
     });
 }]);
 
-app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth', '$state', 'user',function($scope,$http, polls,auth,$state,user){
+app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth', '$state', 'user','filterFilter',function($scope,$http, polls,auth,$state,user,filterFilter){
     auth.varPromise.then(function(data){
         $scope.isLoggedIn = data;
     });
     user.userInfo.then(function(data){
         $scope.currentUser = data.username;
+        $scope.filteredPolls = filterFilter($scope.polls,{author: $scope.currentUser});
     });
     $scope.polls = polls.polls;
     $scope.createPoll = function() {
@@ -194,6 +205,14 @@ app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth', '$state', 'user',
         polls.getAll();
         $state.go('home');
     };
+    
+    $scope.filtered = false;
+    
+    $scope.filterPolls = function() {
+        $scope.filtered = !$scope.filtered;
+    };
+    
+    
 }]);
 
 

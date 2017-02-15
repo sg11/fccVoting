@@ -126,7 +126,7 @@ img {
 	border: 0;
 	font-size: 14px;
 	border-radius: 3px;
-	padding: 5px 5px;
+	padding: 10px 10px;
 	/*width: 100px;*/
 	font-weight: 500;
 }
@@ -206,9 +206,15 @@ span {
 /****** Navbar Styling ******/
 
 .navbar {
-	background-color: #00BCD4;
+	background-color: #627C85;
 	padding-left: 10px;
+	border:none;
 }
 .white {
 	color: white !important;
+}
+
+a.white:hover {
+	border: solid 1px white;
+	border-radius: 3px;
 }

@@ -29,7 +29,6 @@ module.exports = function (app, passport) {
 	var pollStuff = new PollStuff();
 
 	app.route('/')
-		//.get(isLoggedIn, function (req, res) {
 		.get(function(req, res){
 			res.sendFile(path + '/public/index.html');
 		});
