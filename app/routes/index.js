@@ -2,6 +2,10 @@
 
 var path = process.cwd();
 var ClickHandler = require(path + '/app/controllers/clickHandler.server.js');
+var PollStuff = require(path + '/app/controllers/poll.server.js');
+var mongoose = require('mongoose');
+var Poll = mongoose.model('Poll');
+var Response = mongoose.model('Response');
 
 module.exports = function (app, passport) {
 
@@ -9,17 +13,34 @@ module.exports = function (app, passport) {
 		if (req.isAuthenticated()) {
 			return next();
 		} else {
-			res.redirect('/login');
+			res.redirect('/');
 		}
 	}
-
+	
+	function isAuth (req, res) {
+		if (req.isAuthenticated()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	var clickHandler = new ClickHandler();
+	var pollStuff = new PollStuff();
 
 	app.route('/')
-		.get(isLoggedIn, function (req, res) {
+		//.get(isLoggedIn, function (req, res) {
+		.get(function(req, res){
 			res.sendFile(path + '/public/index.html');
 		});
-
+	
+	app.route('/loggedIn')
+		.get(function(req, res){
+			var auth = isAuth(req, res);
+			if(auth){res.send(true)}
+			else { res.send(false) }
+		});
+	
 	app.route('/login')
 		.get(function (req, res) {
 			res.sendFile(path + '/public/login.html');
@@ -28,12 +49,7 @@ module.exports = function (app, passport) {
 	app.route('/logout')
 		.get(function (req, res) {
 			req.logout();
-			res.redirect('/login');
-		});
-
-	app.route('/profile')
-		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/profile.html');
+			res.redirect('/');
 		});
 
 	app.route('/api/:id')
@@ -47,11 +63,34 @@ module.exports = function (app, passport) {
 	app.route('/auth/github/callback')
 		.get(passport.authenticate('github', {
 			successRedirect: '/',
-			failureRedirect: '/login'
+			failureRedirect: '/'
 		}));
 
 	app.route('/api/:id/clicks')
 		.get(isLoggedIn, clickHandler.getClicks)
 		.post(isLoggedIn, clickHandler.addClick)
 		.delete(isLoggedIn, clickHandler.resetClicks);
+		
+	app.route('/poll')
+		.get(pollStuff.getPolls)
+		.post(isLoggedIn, pollStuff.createPoll);
+		
+	app.route('/poll/:id')
+		.get(function(req,res,next){
+			var id = req.params.id;
+			var query = Poll.findById(id);
+    
+		    query.exec(function(err, poll){
+		        if(err) { return next(err); }
+		        if(!poll) { return next(new Error('can\'t find poll')); }
+		        
+		        req.poll = poll;
+		        
+		        req.poll.populate('responses', function(err, poll){
+		        if(err) {return next(err); }
+		        
+		        res.json(poll);
+		    	});
+		    });
+		})
 };
