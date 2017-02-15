@@ -3,36 +3,96 @@
 <html>
 
 	<head>
-		<title>Clementine.js - The elegant and lightweight full stack JavaScript boilerplate.</title>
-		
-		<link href="/public/css/main.css" rel="stylesheet" type="text/css">
+		<title>Voting App</title>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+        <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel="stylesheet">
+        <link href="/public/css/main.css" rel="stylesheet" type="text/css">
+        		
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+        <script src="/public/javascript/angularApp.js"></script>
 	</head>
 
-	<header>
-		<p>Welcome, <span id="display-name"></span>!</p>
-		<a class="menu" href="/profile">Profile</a>
-		<p>|</p>
-		<a class="menu" href="/logout">Logout</a>
-	</header>
+	<body ng-app="newApp">
+	    <nav class="navbar navbar-default" ng-controller="NavCtrl">
+	        <div class="container-fluid">
+    	        <p class="navbar-text white">Welcome, <span id="display-name">Guest</span>!</p>
+    	        <ul class="nav navbar-nav navbar-right">
+    	        	<li><a class="white" href="/">Home</a></li>
+    	            <li ng-show="isLoggedIn"><a class="white" href="/logout">Logout</a></li>
+    	            <li ng-hide="isLoggedIn"><a class="white" href="/auth/github">Login</a></li>
+    	            <li><a class="white" href="/#/profile">Profile</a></li>
+    	        </ul>
+    	   </div>
+	    </nav>
+	    <ui-view></ui-view>
+	    	<!--<div class="row">-->
+		    <!--	<form id="pollForm" ng-submit="createPoll()">-->
+		    <!--		<div class="form-group">-->
+			   <!-- 		<input type="text" ng-model="title" placeholder="Title">-->
+			   <!-- 	</div>-->
+			   <!-- 	<div class="form-group">-->
+			   <!-- 		<textarea rows="5" form="pollForm" placeholder="Options" ng-model="choices"></textarea>-->
+			   <!-- 	</div>-->
+			   <!-- 	<button type="submit">Create Poll</button>-->
+		    <!--	</form>-->
+		    <!--</div>-->
 
-	<body>
-		<div class="container">
-			<img src="/public/img/clementine_150.png" />
-			<br />
-			<p class="clementine-text">Clementine.js</p>
-		</div>
-	
-		<div class="container">
-			<p>You have clicked the button <span id="click-nbr"></span> times.</p>
-			<br />
-			<div class="btn-container">
-				<button type="submit" class="btn btn-add">CLICK ME!</button>
-				<button class="btn btn-delete">RESET</button>
+		<script type="text/ng-template" id="/home.html">
+			<div class="text-center">
+		    	<div class="row">
+					<div class="text-center col-md-6" style="margin-left: 50px; padding-left: 25px;">
+						<div ng-repeat="poll in polls" class="text-left">
+				    		<h3>
+				    			<a href="/#/poll/{{poll._id}}">{{poll.title}}</a><br>
+				    			<small>{{poll.author}}</small>
+				    		</h3>
+							<hr>
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
+		</script>
 		
-		<script type="text/javascript" src="common/ajax-functions.js"></script>
-		<script type="text/javascript" src="controllers/clickController.client.js"></script>
+		<script type="text/ng-template" id="/profile.html">
+			<div class="container">
+				<h1 style="float: left;"><i class="fa fa-github fa-4x"></i></h1>
+				<div ng-show="authUser" class="profilePane">
+					<p><span>ID: </span><span id="profile-id" class="profile-value">{{id}}</span></p>
+					<p><span>Username: </span><span id="profile-username" class="profile-value">{{username}}</span></p>
+					<p><span>Display Name: </span><span id="display-name" class="profile-value">{{displayName}}</span></p>
+					<p><span>Repositories: </span><span id="profile-repos" class="profile-value">{{publicRepos}}</span></p>
+				</div>
+				<div ng-hide="authUser" class="profilePane alert alert-danger">
+					Please login to view your profile.
+				</div>
+			</div>
+		</script>
+	    
+	    <script type="text/ng-template" id="/polls.html">
+	    	<div class="col-xs-offset-1">
+		    	<div class="page-header">
+	                <h3>
+	                     {{poll.title}}
+	                     <br>
+	                     <small>{{poll.author}}
+	                </h3>
+	            </div>
+	            <form>
+		            <div class="form-group" ng-repeat="choice in poll.choices">
+		            	<div class="radio">
+		            		<label><input type="radio" name="pollChoice">{{choice}}</label>
+		            	</div>
+		            </div>
+		            <button class="btn btn-sm btn-primary" type="submit">Submit</button>
+		        </form>
+		        <div>
+		        	{{poll.responses}}
+		        </div>
+	        </div>
+	    </script>
+	    
+	    <script type="text/javascript" src="common/ajax-functions.js"></script>
 		<script type="text/javascript" src="controllers/userController.client.js"></script>
 	</body>
 
