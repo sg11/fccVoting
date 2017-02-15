@@ -1,4 +1,4 @@
-var app = angular.module('newApp', ['ui.router']);
+var app = angular.module('newApp', ['ui.router', 'googlechart']);
 
 app.config([
     '$stateProvider',
@@ -83,11 +83,73 @@ app.factory('polls',['$http', function($http){
         });
     };
     
+    o.addResponse = function(id, response) {
+        return $http.post('/poll/' + id + '/response', response).success(function(data){
+            return data;
+        });
+    };
+    
     return o;
 }]);
 
 app.controller('PollsCtrl',['$scope','polls','poll',function($scope, polls, poll){
     $scope.poll = poll;
+    
+    $scope.data = [];
+    
+    $scope.updateData = function() {
+        for (var i = 0; i < poll.choices.length; i++) {
+            var newChoice = [poll.choices[i], 0];
+            $scope.data.push(newChoice);
+        }
+        
+        for (var j = 0; j < poll.responses.length; j++) {
+            for (var k = 0; k < $scope.data.length; k++) {
+                if($scope.data[k].indexOf(poll.responses[j].choice) > -1){
+                    $scope.data[k][1] += 1;
+                }
+            }
+        }
+    };
+        
+    $scope.addResponse = function() {
+        if($scope.pollChoice === ''){return;}
+        polls.addResponse(poll._id, {
+            choice: $scope.pollChoice
+        }).success(function(response){
+            $scope.poll.responses.push(response);
+        });
+        for(var n = 0; n < $scope.chartObject.data.rows.length; n++) {
+            if($scope.chartObject.data.rows[n]['c'][0]['v'] == $scope.pollChoice) {
+                $scope.chartObject.data.rows[n]['c'][1]['v'] += 1;
+            }
+        }
+        $scope.pollChoice = '';
+    };
+    
+    $scope.updateData();
+    
+    $scope.chartObject = {};
+    
+    $scope.chartObject.type = "PieChart";
+    
+    $scope.chartObject.data = {"cols": [
+        {label: "Choice", type: "string"},
+        {label: "Responses", type: "number"}
+        ], "rows": []};
+        
+    for (var m = 0; m < $scope.data.length; m++) {
+        $scope.chartObject.data.rows.push(
+            {c: [
+                {v: $scope.data[m][0]},
+                {v: $scope.data[m][1]},
+            ]});
+    }
+    
+    $scope.chartObject.options = {
+        pieHole: 0.4
+    };
+    
 }]);
 
 app.controller('NavCtrl',['$scope', '$q','auth',function($scope, $q, auth){
@@ -119,3 +181,6 @@ app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth',function($scope,$h
         polls.getAll();
     };
 }]);
+
+
+

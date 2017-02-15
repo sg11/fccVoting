@@ -10,6 +10,8 @@
         		
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.2/angular-ui-router.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-google-chart/0.1.0/ng-google-chart.min.js"></script>
         <script src="/public/javascript/angularApp.js"></script>
 	</head>
 
@@ -70,7 +72,7 @@
 		</script>
 	    
 	    <script type="text/ng-template" id="/polls.html">
-	    	<div class="col-xs-offset-1">
+	    	<div class="col-xs-offset-1 col-xs-4" style="float: left;">
 		    	<div class="page-header">
 	                <h3>
 	                     {{poll.title}}
@@ -78,18 +80,16 @@
 	                     <small>{{poll.author}}
 	                </h3>
 	            </div>
-	            <form>
-		            <div class="form-group" ng-repeat="choice in poll.choices">
-		            	<div class="radio">
-		            		<label><input type="radio" name="pollChoice">{{choice}}</label>
+	            <form style="float: left;" ng-submit="addResponse()">
+		            <div class="form-group">
+		            	<div class="radio" ng-repeat="choice in poll.choices">
+		            		<label><input type="radio" ng-model="$parent.pollChoice" ng-value="choice" name="pollChoice">{{choice}}</label>
 		            	</div>
 		            </div>
 		            <button class="btn btn-sm btn-primary" type="submit">Submit</button>
 		        </form>
-		        <div>
-		        	{{poll.responses}}
-		        </div>
-	        </div>
+			</div>
+		    <div google-chart chart="chartObject" style="float: right; width: 800px; height: 400px;"></div>
 	    </script>
 	    
 	    <script type="text/javascript" src="common/ajax-functions.js"></script>

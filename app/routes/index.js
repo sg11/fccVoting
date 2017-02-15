@@ -92,5 +92,32 @@ module.exports = function (app, passport) {
 		        res.json(poll);
 		    	});
 		    });
-		})
+		});
+	
+	app.route('/poll/:id/response')
+		.post(function(req, res, next) {
+			var id = req.params.id;
+			var query = Poll.findById(id);
+			
+			query.exec(function(err, poll){
+				if(err) { return next(err) }
+				if(!poll) { return next(new Error('can\'t find poll')); }
+				
+				req.poll = poll;
+			});
+			
+			var response= new Response(req.body);
+			response.poll = req.poll;
+			
+			response.save(function(err, response){
+				if(err) {return next(err); }
+				
+				req.poll.responses.push(response);
+				req.poll.save(function(err, poll){
+					if(err){ return next(err); }
+					
+					res.json(response);
+				});
+			});
+		});
 };
