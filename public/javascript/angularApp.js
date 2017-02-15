@@ -29,6 +29,11 @@ app.config([
                         return polls.getOne($stateParams.id);
                     }]
                 }
+            })
+            .state('newPoll',{
+                url: '/newPoll',
+                templateUrl: '/newPoll.html',
+                controller: 'MainCtrl'
             });
         $urlRouterProvider.otherwise('home');
 }]);
@@ -168,9 +173,17 @@ app.controller('ProfileCtrl', ['$scope', 'user',function($scope,user){
     });
 }]);
 
-app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth',function($scope,$http, polls,auth){
+app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth', '$state', 'user',function($scope,$http, polls,auth,$state,user){
+    auth.varPromise.then(function(data){
+        $scope.isLoggedIn = data;
+    });
+    user.userInfo.then(function(data){
+        $scope.currentUser = data.username;
+    });
     $scope.polls = polls.polls;
     $scope.createPoll = function() {
+        if($scope.title === '') {return;}
+        if($scope.choices === ''){return;}
         var poll = {
             title: $scope.title,
             choices:$scope.choices.split('\n')
@@ -179,6 +192,7 @@ app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth',function($scope,$h
         $scope.title = '';
         $scope.choices = '';
         polls.getAll();
+        $state.go('home');
     };
 }]);
 

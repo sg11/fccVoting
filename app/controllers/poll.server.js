@@ -13,7 +13,7 @@ function PollStuff() {
         	if (err) {
         		return next(err);
         	}
-        
+        	
         	res.json(newPoll);
         });
     };
