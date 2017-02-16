@@ -1,7 +1,7 @@
 #Splinter
 Created by sg11
 
-###Splinter is an application intended to allow anyone to create and share polls as well as respond to polls already created. It was developed using the Clementine.js boilerplate, Angular, Node.js, MongoDB, and Express and includes GitHub authentication using Passport. This app is a project for the Back End Certification on FreeCodeCamp.
+###Splinter is an application intended to allow anyone to create and share polls as well as respond to polls already created. It was developed using the Clementine.js boilerplate, Angular.js, Node.js, MongoDB, and Express and includes GitHub authentication using Passport. This app is a project for the Back End Certification on FreeCodeCamp.
 
 ##User Stories:
  1. As an authenticated user, I can keep my polls and come back later to access them.
