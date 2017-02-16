@@ -24,7 +24,7 @@
 				        <span class="icon-bar"></span>
 				        <span class="icon-bar"></span> 
 				    </button>
-	    	        <a class="navbar-brand white" href="#">{{greeting}}, <span id="display-name">sign up or login to create your own polls</span>!</a>
+	    	        <p class="navbar-text white" >{{greeting}}, <span id="display-name">sign up or login to create your own polls</span>!</p>
 	    	    </div>
 	    	    <div class='navbar-collapse collapse' id='myNavbar'>
 	    	        <ul class="nav navbar-nav navbar-right">
@@ -50,19 +50,31 @@
 						<button ng-click="filterPolls()" ng-hide="!isLoggedIn || filtered" class="btn btn-custom">View My Polls</button>
 						<a href="/#/newPoll" ng-show="isLoggedIn"><button class="btn btn-success">Create New Poll</button></a>
 		    		</div>
-					<div class="text-center col-xs-8 col-xs-offset-1" style="padding-left: 25px;">
+					<div class="text-center col-xs-8 col-xs-offset-2" style="padding-left: 25px;">
 						<div ng-hide="filtered" ng-repeat="poll in polls" class="text-left">
-				    		<h3 style="font-size: 22px">
-				    			<a href="/#/poll/{{poll._id}}">{{poll.title}}</a><br>
-				    			<small>{{poll.author}}</small>
-				    		</h3>
+				    		<div class="row">
+					    		<h3 class="col-xs-8">
+					    			<a href="/#/poll/{{poll._id}}">{{poll.title}}</a><br>
+					    			<small>{{poll.author}}</small>
+					    		</h3>
+					    		<div ng-show="poll.author == currentUser" class="col-xs-2 col-xs-offset-2">
+					    			<br>
+					    			<button ng-click="deletePoll(poll._id)" class="btn btn-danger">Delete Poll</button>
+					    		</div>
+					    	</div>
 							<hr>
 						</div>
 						<div ng-show="filtered" ng-repeat="poll in filteredPolls" class="text-left">
-				    		<h3>
-				    			<a href="/#/poll/{{poll._id}}">{{poll.title}}</a><br>
-				    			<small>{{poll.author}}</small>
-				    		</h3>
+							<div class="row">
+					    		<h3 class="col-xs-8">
+					    			<a href="/#/poll/{{poll._id}}">{{poll.title}}</a><br>
+					    			<small>{{poll.author}}</small>
+					    		</h3>
+					    		<div class="col-xs-2 col-xs-offset-2">
+					    			<br>
+					    			<button ng-click="deletePoll(poll._id)" class="btn btn-danger">Delete Poll</button>
+					    		</div>
+					    	</div>
 							<hr>
 						</div>
 					</div>
@@ -83,8 +95,10 @@
 			    		<p>Options (separated by a new line)</p>
 			    		<textarea rows="5" form="pollForm" placeholder="Options" ng-model="choices" style="width: 400px;"></textarea>
 			    	</div>
-			    	<button class="btn" style="float:right; margin-right: 70px;" type="submit">Create Poll</button>
+			    	<button class="btn btn-success" style="float:right;" type="submit">Create Poll</button>
 		    	</form>
+		    	<br><br><br>
+		    	<div ng-show="error" class="alert alert-warning text-center">Please fill out all fields to create a poll</div>
 			</div>
 			<div ng-hide="isLoggedIn" class="col-xs-offset-4 col-xs-4">
 				<div class="text-center alert alert-danger" style="width: 400px;">Please login to create a poll</div>

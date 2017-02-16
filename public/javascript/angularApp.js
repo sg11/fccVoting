@@ -88,6 +88,12 @@ app.factory('polls',['$http', function($http){
         });
     };
     
+    o.delete = function(id) {
+        return $http.delete('/poll/' + id).then(function(res){
+            return res;
+        });
+    };
+    
     o.addResponse = function(id, response) {
         return $http.post('/poll/' + id + '/response', response).success(function(data){
             return data;
@@ -192,9 +198,19 @@ app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth', '$state', 'user',
         $scope.filteredPolls = filterFilter($scope.polls,{author: $scope.currentUser});
     });
     $scope.polls = polls.polls;
+    
+    $scope.deletePoll = function(id){
+        polls.delete(id);
+        $state.reload();
+    };
+    
+    $scope.error = false;
     $scope.createPoll = function() {
-        if($scope.title === '') {return;}
-        if($scope.choices === ''){return;}
+        if(typeof $scope.title === "undefined" || typeof $scope.choices === "undefined") {
+            $scope.error = true;
+            return;
+        }
+        $scope.error = false;
         var poll = {
             title: $scope.title,
             choices:$scope.choices.split('\n')

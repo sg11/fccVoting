@@ -91,6 +91,14 @@ module.exports = function (app, passport) {
 		        res.json(poll);
 		    	});
 		    });
+		})
+		.delete(function(req,res,next){
+			Poll.findOneAndRemove({'_id' : req.params.id}, function (err,poll){
+				if(err) {return next(err);}
+				if(!poll) {return next(new Error('can\'t find poll'));}
+				
+		        res.json(poll);
+		      });
 		});
 	
 	app.route('/poll/:id/response')
