@@ -14,6 +14,7 @@
   src: local('Roboto Medium'), local('Roboto-Medium'), url('../fonts/Roboto-Medium.ttf') format('truetype');
 }
 
+
 /****** Main Styling ******/
 
 body {
@@ -217,4 +218,8 @@ span {
 a.white:hover {
 	border: solid 1px white;
 	border-radius: 3px;
+}
+
+.titleFont {
+	font-family: 'Bahiana', cursive;
 }
