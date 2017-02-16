@@ -127,4 +127,15 @@ module.exports = function (app, passport) {
 				});
 			});
 		});
+		
+	app.route('/poll/:id/add/:choice')
+		.post(function(req, res){
+			Poll
+				.findOneAndUpdate({'_id': req.params.id},{$push: {'choices':req.params.choice}})
+				.exec(function(err,result){
+					if(err) {throw err;}
+					
+					res.json(result.choices);
+				});
+		});
 };

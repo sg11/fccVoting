@@ -100,10 +100,20 @@ app.factory('polls',['$http', function($http){
         });
     };
     
+    o.addChoice = function(id, choice) {
+        return $http.post('/poll/' + id + '/add/' + choice).success(function(data){
+            return data;
+        });
+    };
+    
     return o;
 }]);
 
-app.controller('PollsCtrl',['$scope','polls','poll','$window',function($scope, polls, poll,$window){
+app.controller('PollsCtrl',['$scope','polls','poll','$window', 'auth', '$state', function($scope, polls, poll,$window,auth,$state){
+    auth.varPromise.then(function(data){
+        $scope.isLoggedIn = data;
+    });
+    
     $scope.poll = poll;
     
     $scope.data = [];
@@ -113,7 +123,7 @@ app.controller('PollsCtrl',['$scope','polls','poll','$window',function($scope, p
         var twt = 'Vote in my poll!\n' + url;
         var twtLink = 'http://twitter.com/home?status=' +encodeURIComponent(twt);
         $window.open(twtLink,'_blank');
-    }
+    };
     
     $scope.updateData = function() {
         for (var i = 0; i < poll.choices.length; i++) {
@@ -132,8 +142,18 @@ app.controller('PollsCtrl',['$scope','polls','poll','$window',function($scope, p
         
     $scope.addResponse = function() {
         if($scope.pollChoice === ''){return;}
+        if($scope.pollChoice === 'Other') {
+            polls.addChoice(poll._id, $scope.newChoice);
+            $scope.chartObject.data.rows.push(
+                {c: [
+                    {v: $scope.newChoice},
+                    {v: 1},
+                ]}
+            );
+            $scope.poll.choices.push($scope.newChoice);
+        }
         polls.addResponse(poll._id, {
-            choice: $scope.pollChoice
+            choice: $scope.pollChoice == 'Other' ? $scope.newChoice : $scope.pollChoice
         }).success(function(response){
             $scope.poll.responses.push(response);
         });
@@ -211,6 +231,7 @@ app.controller("MainCtrl", ['$scope','$http', 'polls', 'auth', '$state', 'user',
             return;
         }
         $scope.error = false;
+        
         var poll = {
             title: $scope.title,
             choices:$scope.choices.split('\n')

@@ -135,6 +135,12 @@
 			            	<div class="radio" ng-repeat="choice in poll.choices">
 			            		<label><input type="radio" ng-model="$parent.pollChoice" ng-value="choice" name="pollChoice">{{choice}}</label><br>
 			            	</div>
+			            	<div ng-show="isLoggedIn" class="radio">
+			            		<label><input type="radio" ng-model="pollChoice" value="Other" name="pollChoice">Other</label><br>
+			            	</div>
+			            	<div ng-show="pollChoice == 'Other'">
+			            		<input type="text" class="form-control" ng-model="newChoice" placeholder="Enter your response">
+			            	</div>
 			            </div>
 		            </div>
 		            <div class="row">
